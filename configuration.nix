@@ -14,7 +14,12 @@ in
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       "${impermanence}/nixos.nix" 
+          (fetchTarball "https://github.com/nix-community/nixos-vscode-server/tarball/master")
+
     ];
+
+      services.vscode-server.enable = true;
+
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -208,6 +213,7 @@ in
 
   # update sudoers to allow alice to run sudo without password
   security.sudo.wheelNeedsPassword = false;
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
   
 
 
