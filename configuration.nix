@@ -157,5 +157,21 @@
   networking.hostId="8425e349";
   nixpkgs.config.allowUnfree=true;
   services.tailscale.enable = true;
+
+  # Persisting user passwords
+  users.mutableUsers = false;
+  fileSystems."/persist".neededForBoot = true;
+  users.users = mkMerge (
+    [ { root.passwordFile = "/persist/passwords/root"; } ] ++
+    forEach cfg.users (u:
+      { "${u}".passwordFile = "/persist/passwords/${u}"; }
+    )
+  );
+  # to create the password files, run:
+  # $ sudo su
+  # $ nix-shell -p mkpasswd
+  # $ mkdir -p /persist/passwords
+  # $ mkpasswd -m sha-512 > /persist/passwords/root
+  # $ mkpasswd -m sha-512 > /persist/passwords/alice
 }
 
