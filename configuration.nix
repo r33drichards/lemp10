@@ -105,8 +105,9 @@ in
     caffeine-ng
     slack
     nixpkgs-fmt
-    direnv
   ];
+  programs.direnv.enable = true;
+
 
   systemd.services.clone-repos = {
     description = "Clone repositories to /home/alice";
