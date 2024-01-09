@@ -203,7 +203,6 @@ in
     directories = [
       "/etc/NetworkManager/system-connections"
     ];
-
   };
 
 
