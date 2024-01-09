@@ -67,12 +67,47 @@
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     emacs 
-    vscode 
+    (vscode-with-extensions.override {
+    vscodeExtensions = with vscode-extensions; [
+      bbenoist.nix
+      ms-python.python
+      ms-azuretools.vscode-docker
+      ms-vscode-remote.remote-ssh
+      github.copilot
+    ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+      {
+        name = "remote-ssh-edit";
+        publisher = "ms-vscode-remote";
+        version = "0.47.2";
+        sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
+      }
+    ];
+  }) 
     sbclPackages.stumpwm   
     google-chrome
     gnome.gnome-terminal
     git
+    openssh 
   ];
+
+  systemd.services.clone-repos = {
+    description = "Clone repositories to /home/alice";
+    wantedBy = [ "multi-user.target" ];
+
+    script = ''
+      #!/bin/sh
+      # add ssh to path
+      export PATH=$PATH:${pkgs.openssh}/bin
+      cd /home/alice || exit
+      ${pkgs.git}/bin/git clone git@gitlab.com:reedrichards/dotfiles.git
+      # Add more repositories as needed
+    '';
+
+    serviceConfig = {
+      User = "alice";
+      Group = "users"; # or set it to alice's primary group
+    };
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
