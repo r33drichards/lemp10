@@ -89,6 +89,7 @@
     git
     openssh 
     caffeine-ng
+    slack
   ];
 
   systemd.services.clone-repos = {
