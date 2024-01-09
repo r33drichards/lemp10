@@ -100,7 +100,10 @@
       # add ssh to path
       export PATH=$PATH:${pkgs.openssh}/bin
       cd /home/alice || exit
-      ${pkgs.git}/bin/git clone git@gitlab.com:reedrichards/dotfiles.git
+      # clone if not exists
+      if [ ! -d "dotfiles" ]; then
+        ${pkgs.git}/bin/git clone git@gitlab.com:reedrichards/dotfiles.git
+      fi
       # Add more repositories as needed
     '';
 
