@@ -104,6 +104,8 @@ in
     openssh 
     caffeine-ng
     slack
+    nixpkgs-fmt
+    direnv
   ];
 
   systemd.services.clone-repos = {
