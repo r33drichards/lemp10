@@ -4,6 +4,9 @@
 
 { config, pkgs, ... }:
 
+let 
+  impermanence = builtins.fetchTarball "https://github.com/nix-community/impermanence/archive/master.tar.gz";
+in
 {
 
 
@@ -194,27 +197,18 @@
   # persist networkmanager
   #  mkdir -p /persist/etc/NetworkManager/system-connections
 
-  systemd.services.persist-networkmanager = {
-    description = "persist networkmanager";
-    wantedBy = [ "multi-user.target" ];
+  environment.persistence."/nix/persist/system" = {
+    hideMounts = true;
+    directories = [
+      "/var/log"
+      "/var/lib/bluetooth"
+      "/var/lib/nixos"
+      "/var/lib/systemd/coredump"
+      "/etc/NetworkManager/system-connections"
+      "/etc/nixos"
+      { directory = "/var/lib/colord"; user = "colord"; group = "colord"; mode = "u=rwx,g=rx,o="; }
+    ];
 
-    script = ''
-      #!/bin/sh
-      mkdir -p /persist/etc/NetworkManager/system-connections
-    '';
-
-    serviceConfig = {
-      User = "root";
-      Group = "root";
-    };
-  };
-
-  etc."NetworkManager/system-connections" = {
-    source = "/persist/etc/NetworkManager/system-connections/";
-  };
-
-  etc."nixos" = {
-    source = "/home/lemp10-nixos/";
   };
 
 
