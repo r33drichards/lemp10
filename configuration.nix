@@ -206,6 +206,10 @@ in
     ];
   };
 
+  # update sudoers to allow alice to run sudo without password
+  security.sudo.wheelNeedsPassword = false;
+  
+
 
 }
 
