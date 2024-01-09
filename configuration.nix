@@ -88,6 +88,7 @@
     gnome.gnome-terminal
     git
     openssh 
+    caffeine-ng
   ];
 
   systemd.services.clone-repos = {
@@ -101,6 +102,23 @@
       cd /home/alice || exit
       ${pkgs.git}/bin/git clone git@gitlab.com:reedrichards/dotfiles.git
       # Add more repositories as needed
+    '';
+
+    serviceConfig = {
+      User = "alice";
+      Group = "users"; # or set it to alice's primary group
+    };
+  };
+
+  # run caffeine-ng on startup
+  systemd.services.caffeine-ng = {
+    description = "Caffeine-ng";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" ];
+
+    script = ''
+      #!/bin/sh
+      ${pkgs.caffeine-ng}/bin/caffeine-ng &
     '';
 
     serviceConfig = {
