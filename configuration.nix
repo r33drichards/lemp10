@@ -189,5 +189,34 @@
       Group = "root";
     };
   };
+
+
+  # persist networkmanager
+  #  mkdir -p /persist/etc/NetworkManager/system-connections
+
+  systemd.services.persist-networkmanager = {
+    description = "persist networkmanager";
+    wantedBy = [ "multi-user.target" ];
+
+    script = ''
+      #!/bin/sh
+      mkdir -p /persist/etc/NetworkManager/system-connections
+    '';
+
+    serviceConfig = {
+      User = "root";
+      Group = "root";
+    };
+  };
+
+  etc."NetworkManager/system-connections" = {
+    source = "/persist/etc/NetworkManager/system-connections/";
+  };
+
+  etc."nixos" = {
+    source = "/home/lemp10-nixos/";
+  };
+
+
 }
 
