@@ -4,21 +4,22 @@
 
 { config, pkgs, ... }:
 
-let 
+let
   impermanence = builtins.fetchTarball "https://github.com/nix-community/impermanence/archive/master.tar.gz";
 in
 {
 
 
   imports =
-    [ # Include the results of the hardware scan.
+    [
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      "${impermanence}/nixos.nix" 
-          (fetchTarball "https://github.com/nix-community/nixos-vscode-server/tarball/master")
+      "${impermanence}/nixos.nix"
+      (fetchTarball "https://github.com/nix-community/nixos-vscode-server/tarball/master")
 
     ];
 
-      services.vscode-server.enable = true;
+  services.vscode-server.enable = true;
 
 
   # Use the systemd-boot EFI boot loader.
@@ -28,7 +29,7 @@ in
   # networking.hostName = "nixos"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
@@ -71,7 +72,7 @@ in
   users.users.alice = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-    packages = with pkgs; [];
+    packages = with pkgs; [ ];
     passwordFile = "/persist/passwords/alice";
   };
 
@@ -80,28 +81,28 @@ in
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
-    emacs 
+    emacs
     (vscode-with-extensions.override {
-    vscodeExtensions = with vscode-extensions; [
-      bbenoist.nix
-      ms-python.python
-      ms-azuretools.vscode-docker
-      ms-vscode-remote.remote-ssh
-      github.copilot
-    ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-      {
-        name = "remote-ssh-edit";
-        publisher = "ms-vscode-remote";
-        version = "0.47.2";
-        sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
-      }
-    ];
-  }) 
-    sbclPackages.stumpwm   
+      vscodeExtensions = with vscode-extensions; [
+        bbenoist.nix
+        ms-python.python
+        ms-azuretools.vscode-docker
+        ms-vscode-remote.remote-ssh
+        github.copilot
+      ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+        {
+          name = "remote-ssh-edit";
+          publisher = "ms-vscode-remote";
+          version = "0.47.2";
+          sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
+        }
+      ];
+    })
+    sbclPackages.stumpwm
     google-chrome
     gnome.gnome-terminal
     git
-    openssh 
+    openssh
     caffeine-ng
     slack
     nixpkgs-fmt
@@ -137,7 +138,7 @@ in
   systemd.targets.suspend.enable = false;
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
- 
+
 
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -171,8 +172,8 @@ in
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.05"; # Did you read the comment?
-  networking.hostId="8425e349";
-  nixpkgs.config.allowUnfree=true;
+  networking.hostId = "8425e349";
+  nixpkgs.config.allowUnfree = true;
   services.tailscale.enable = true;
 
 
@@ -182,7 +183,7 @@ in
   # $ mkdir -p /persist/passwords
   # $ mkpasswd -m sha-512 > /persist/passwords/root
   # $ mkpasswd -m sha-512 > /persist/passwords/alice
-    boot.initrd.postDeviceCommands = pkgs.lib.mkAfter ''
+  boot.initrd.postDeviceCommands = pkgs.lib.mkAfter ''
     zfs rollback -r rpool/local/root@blank
   '';
 
@@ -217,7 +218,7 @@ in
   # update sudoers to allow alice to run sudo without password
   security.sudo.wheelNeedsPassword = false;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  
+
 
 
 }
