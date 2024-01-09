@@ -174,6 +174,20 @@
     zfs rollback -r rpool/local/root@blank
   '';
 
+  # systemd service to chown -R /etc/nixos
+  systemd.services.chown-etc-nixos = {
+    description = "chown -R /etc/nixos";
+    wantedBy = [ "multi-user.target" ];
 
+    script = ''
+      #!/bin/sh
+      chown -R alice /etc/nixos
+    '';
+
+    serviceConfig = {
+      User = "root";
+      Group = "root";
+    };
+  };
 }
 
