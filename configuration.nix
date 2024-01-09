@@ -173,10 +173,7 @@
     boot.initrd.postDeviceCommands = pkgs.lib.mkAfter ''
     zfs rollback -r rpool/local/root@blank
   '';
-  fileSystems."/etc/nixos" = {
-    source = "/etc/nixos";
-    permissions = "0775";  # Adjust the permission mode as needed
-    owner = "alice";      # Set the owner to 'alice'
-  };
+
+
 }
 
