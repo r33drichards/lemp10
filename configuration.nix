@@ -53,12 +53,17 @@
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
+  # Persisting user passwords
+  users.mutableUsers = false;
+  fileSystems."/persist".neededForBoot = true;
 
+  users.users.root.passwordFile = "/persist/passwords/root";
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.alice = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [];
+    passwordFile = "/persist/passwords/alice";
   };
 
   # List packages installed in system profile. To search, run:
@@ -158,15 +163,7 @@
   nixpkgs.config.allowUnfree=true;
   services.tailscale.enable = true;
 
-  # Persisting user passwords
-  users.mutableUsers = false;
-  fileSystems."/persist".neededForBoot = true;
-  users.users = mkMerge (
-    [ { root.passwordFile = "/persist/passwords/root"; } ] ++
-    forEach cfg.users (u:
-      { "${u}".passwordFile = "/persist/passwords/${u}"; }
-    )
-  );
+
   # to create the password files, run:
   # $ sudo su
   # $ nix-shell -p mkpasswd
@@ -176,5 +173,10 @@
     boot.initrd.postDeviceCommands = lib.mkAfter ''
     zfs rollback -r rpool/local/root@blank
   '';
+  fileSystems."/etc/nixos" = {
+    source = "/etc/nixos";
+    permissions = "0775";  # Adjust the permission mode as needed
+    owner = "alice";      # Set the owner to 'alice'
+  };
 }
 
