@@ -173,5 +173,8 @@
   # $ mkdir -p /persist/passwords
   # $ mkpasswd -m sha-512 > /persist/passwords/root
   # $ mkpasswd -m sha-512 > /persist/passwords/alice
+    boot.initrd.postDeviceCommands = lib.mkAfter ''
+    zfs rollback -r rpool/local/root@blank
+  '';
 }
 
