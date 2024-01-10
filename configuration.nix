@@ -63,7 +63,14 @@ in
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
-  # Persisting user passwords
+  
+  # Persisting user passwords 
+  # to create the password files, run:
+  # $ sudo su
+  # $ nix-shell -p mkpasswd
+  # $ mkdir -p /persist/passwords
+  # $ mkpasswd -m sha-512 > /persist/passwords/root
+  # $ mkpasswd -m sha-512 > /persist/passwords/alice
   users.mutableUsers = false;
   fileSystems."/persist".neededForBoot = true;
 
@@ -177,12 +184,6 @@ in
   services.tailscale.enable = true;
 
 
-  # to create the password files, run:
-  # $ sudo su
-  # $ nix-shell -p mkpasswd
-  # $ mkdir -p /persist/passwords
-  # $ mkpasswd -m sha-512 > /persist/passwords/root
-  # $ mkpasswd -m sha-512 > /persist/passwords/alice
   boot.initrd.postDeviceCommands = pkgs.lib.mkAfter ''
     zfs rollback -r rpool/local/root@blank
   '';
