@@ -63,7 +63,7 @@ in
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
-  
+
   # Persisting user passwords 
   # to create the password files, run:
   # $ sudo su
@@ -206,8 +206,6 @@ in
 
 
   # persist networkmanager
-  #  mkdir -p /persist/etc/NetworkManager/system-connections
-
   environment.persistence."/persist" = {
     hideMounts = true;
     directories = [
