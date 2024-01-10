@@ -110,7 +110,6 @@ in
     gnome.gnome-terminal
     git
     openssh
-    caffeine-ng
     slack
     nixpkgs-fmt
   ];
