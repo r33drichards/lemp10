@@ -246,7 +246,7 @@ in
       fi
 
       # otherwise authenticate with tailscale
-      ${tailscale}/bin/tailscale up -authkey /persist/ts/authkey --ssh
+      ${tailscale}/bin/tailscale up --ssh -authkey `cat /persist/ts/authkey`
     '';
   };
 
