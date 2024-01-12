@@ -115,7 +115,6 @@ in
   ];
   programs.direnv.enable = true;
 
-
   systemd.services.clone-repos = {
     description = "Clone repositories to /home/alice";
     wantedBy = [ "multi-user.target" ];
