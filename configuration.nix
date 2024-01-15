@@ -5,7 +5,10 @@
 { config, pkgs, ... }:
 
 let
-  impermanence = builtins.fetchTarball "https://github.com/nix-community/impermanence/archive/master.tar.gz";
+  impermanence = builtins.fetchTarball {
+    url = "https://github.com/nix-community/impermanence/archive/master.tar.gz";
+    sha256 = "sha256:16x067nv146igqfxq8b3a0rf6715z5vpl0hz27dp2a29s6lr8944";
+  };
 in
 {
 
@@ -15,7 +18,10 @@ in
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       "${impermanence}/nixos.nix"
-      (fetchTarball "https://github.com/nix-community/nixos-vscode-server/tarball/master")
+      (fetchTarball {
+        url = "https://github.com/nix-community/nixos-vscode-server/tarball/master";
+        sha256 = "sha256:0sz8njfxn5bw89n6xhlzsbxkafb6qmnszj4qxy2w0hw2mgmjp829";
+})
 
     ];
 
