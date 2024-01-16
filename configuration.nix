@@ -252,7 +252,7 @@ in
       ${tailscale}/bin/tailscale up --ssh -authkey `cat /persist/ts/authkey`
     '';
   };
-
-
+# https://github.com/NixOS/nixpkgs/issues/180175
+systemd.services.NetworkManager-wait-online.enable = false;
 }
 
