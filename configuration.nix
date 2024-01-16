@@ -135,6 +135,10 @@ in
         ${pkgs.git}/bin/git clone git@gitlab.com:reedrichards/dotfiles.git
       fi
       # Add more repositories as needed
+      # git@gitlab.com:reedrichards/obay.git
+      if [ ! -d "obay" ]; then 
+        ${pkgs.git}/bin/git clone git@gitlab.com:reedrichards/obay.git
+      fi
     '';
 
     serviceConfig = {
