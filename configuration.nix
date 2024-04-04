@@ -153,7 +153,7 @@ in {
     nixpkgs-fmt
     nixfmt
     (writeShellScriptBin "google-chrome" ''
-      exec ${pkgs.google-chrome}/bin/google-chrom-stable $@
+      exec ${pkgs.google-chrome}/bin/google-chrome-stable $@
     '')
   ];
 
