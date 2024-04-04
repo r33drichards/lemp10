@@ -33,9 +33,7 @@ in {
       exec ${pkgs.polybar}/bin/polybar -c ${polybarConfig}/config/config laptop
     '';
 
-    environment = {
-     DISPLAY = ":0";
-    };
+    environment = { DISPLAY = ":0"; };
 
     serviceConfig = {
       User = "alice";
@@ -63,6 +61,7 @@ in {
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable =
     true; # Easiest to use and most distros use this by default.
+  networking.nameservers = [  "8.8.8.8" "100.100.100.100" "1.1.1.1" "9.9.9.9" ];
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
@@ -115,14 +114,34 @@ in {
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.alice = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [ ];
     passwordFile = "/persist/passwords/alice";
+  };
+
+  programs.dconf.enable = true;
+  security.sudo.enable = true;
+
+
+  systemd.services = {
+    # Enable the Tailscale daemon.
+    nm-applet = {
+      path = with pkgs; [
+        hicolor-icon-theme
+      ];
+      environment = { DISPLAY = ":0"; };
+      description = "Network manager applet";
+      wantedBy = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      serviceConfig.ExecStart = "${pkgs.networkmanagerapplet}/bin/nm-applet";
+      serviceConfig.User = "alice";
+    };
   };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    gnomeExtensions.appindicator
     nodejs
     haskellPackages.xmobar
     dmenu

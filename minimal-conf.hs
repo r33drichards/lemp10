@@ -4,9 +4,12 @@ import XMonad.Util.Ungrab
 import XMonad.Hooks.ManageDocks
 import XMonad.Layout.Spacing
 import XMonad.Hooks.EwmhDesktops
+import XMonad.Actions.WorkspaceNames
+
+
 
 main = do
-  xmonad $ ewmh def
+  xmonad $ workspaceNamesEwmh $ ewmh def
     { terminal    = myTerminal
     , modMask     = myModMask
     , borderWidth = myBorderWidth
@@ -17,7 +20,8 @@ main = do
     [
       -- enable and disable touchpad
       ("M-t", spawn "xinput disable 13"),
-      ("M-S-t", spawn "xinput enable 13")
+      ("M-S-t", spawn "xinput enable 13"),
+      ("M-S-r", renameWorkspace def)
     ]
 
 myTerminal    = "sakura"

@@ -94,26 +94,28 @@ enable-ipc = true
 [module/ewmh]
 type = internal/xworkspaces
 
+group-by-monitor = false
+
 enable-click = true
 enable-scroll = false
 
+
+label-monitor = %name%
+
 ; NOTE: nwin is not supported in the main repo, try
 ;       https://github.com/lepisma/polybar/tree/nwin-for-xworkspaces
-label-active = " %index% "
+label-active = " %name% "
 label-active-foreground = ${colors.foreground}
 label-active-background = ##2a3b4d
 label-active-underline = ${colors.foreground-alt}
 
-label-occupied = " %index% "
+label-occupied = " %name% "
 label-occupied-foreground =  ##ff996
 label-occupied-underline =  #bb64a9
 
 
-label-empty = " %index% "
+label-empty = " %name% "
 label-empty-foreground = ${colors.foreground-alt}
-
-group-by-monitor = false
-
 
 [module/cpu]
 type = internal/cpu
