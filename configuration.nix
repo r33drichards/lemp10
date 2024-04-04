@@ -9,7 +9,7 @@ let
     url = "https://github.com/nix-community/impermanence/archive/master.tar.gz";
     sha256 = "sha256:16x067nv146igqfxq8b3a0rf6715z5vpl0hz27dp2a29s6lr8944";
   };
-  # create a derivation copying ./polybar-config.toml to $out/config
+
   polybarConfig = pkgs.stdenv.mkDerivation {
     name = "polybar-config";
     src = ./.;
@@ -20,36 +20,10 @@ let
   };
 
 in {
-
-  # systemd service to start polybar using the configuration in the derivation defined above
-  systemd.services.polybar = {
-    description = "Polybar";
-    wantedBy = [ "multi-user.target" ];
-
-    script = ''
-      #!/bin/sh
-
-
-      exec ${pkgs.polybar}/bin/polybar -c ${polybarConfig}/config/config laptop
-    '';
-
-    environment = { DISPLAY = ":0"; };
-
-    serviceConfig = {
-      User = "alice";
-      Restart = "always";
-    };
-  };
-
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     "${impermanence}/nixos.nix"
-    (fetchTarball {
-      url =
-        "https://github.com/nix-community/nixos-vscode-server/tarball/master";
-      sha256 = "sha256:0sz8njfxn5bw89n6xhlzsbxkafb6qmnszj4qxy2w0hw2mgmjp829";
-    })
   ];
 
   # Use the systemd-boot EFI boot loader.
@@ -61,7 +35,7 @@ in {
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable =
     true; # Easiest to use and most distros use this by default.
-  networking.nameservers = [  "8.8.8.8" "100.100.100.100" "1.1.1.1" "9.9.9.9" ];
+  networking.nameservers = [   "100.100.100.100" "8.8.8.8"  ];
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
@@ -78,24 +52,16 @@ in {
   #   useXkbConfig = true; # use xkbOptions in tty.
   # };
 
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-  services.xserver.windowManager.xmonad = {
-    enable = true;
-    enableContribAndExtras = true;
-  };
-  services.xserver.windowManager.xmonad.config =
-    builtins.readFile ./minimal-conf.hs;
+ services.xserver.windowManager.xmonad = {
+   enable = true;
+   enableContribAndExtras = true;
+ };
+  services.xserver.displayManager.setupCommands = ''
+    exec ${pkgs.polybar}/bin/polybar -c ${polybarConfig}/config/config laptop &
+    ${pkgs.networkmanagerapplet}/bin/nm-applet &
+  '';
 
-  # Configure keymap in X11
-  # services.xserver.layout = "us";
-  # services.xserver.xkbOptions = "eurosign:e,caps:escape";
-
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
-
-  # Enable sound.
-  # sound.enable = true; # hardware.pulseaudio.enable = true;
+  sound.enable = true; # hardware.pulseaudio.enable = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
