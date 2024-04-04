@@ -9,24 +9,50 @@ let
     url = "https://github.com/nix-community/impermanence/archive/master.tar.gz";
     sha256 = "sha256:16x067nv146igqfxq8b3a0rf6715z5vpl0hz27dp2a29s6lr8944";
   };
-in
-{
+  # create a derivation copying ./polybar-config.toml to $out/config
+  polybarConfig = pkgs.stdenv.mkDerivation {
+    name = "polybar-config";
+    src = ./.;
+    installPhase = ''
+      mkdir -p $out/config
+      cp ./polybar-config.toml $out/config/config
+    '';
+  };
+
+in {
+
+  # systemd service to start polybar using the configuration in the derivation defined above
+  systemd.services.polybar = {
+    description = "Polybar";
+    wantedBy = [ "multi-user.target" ];
+
+    script = ''
+      #!/bin/sh
 
 
-  imports =
-    [
-      # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      "${impermanence}/nixos.nix"
-      (fetchTarball {
-        url = "https://github.com/nix-community/nixos-vscode-server/tarball/master";
-        sha256 = "sha256:0sz8njfxn5bw89n6xhlzsbxkafb6qmnszj4qxy2w0hw2mgmjp829";
-})
+      exec ${pkgs.polybar}/bin/polybar -c ${polybarConfig}/config/config laptop
+    '';
 
-    ];
+    environment = {
+     DISPLAY = ":0";
+    };
 
-  services.vscode-server.enable = true;
+    serviceConfig = {
+      User = "alice";
+      Restart = "always";
+    };
+  };
 
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    "${impermanence}/nixos.nix"
+    (fetchTarball {
+      url =
+        "https://github.com/nix-community/nixos-vscode-server/tarball/master";
+      sha256 = "sha256:0sz8njfxn5bw89n6xhlzsbxkafb6qmnszj4qxy2w0hw2mgmjp829";
+    })
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -35,7 +61,8 @@ in
   # networking.hostName = "nixos"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable =
+    true; # Easiest to use and most distros use this by default.
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
@@ -54,7 +81,12 @@ in
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.xserver.windowManager.xmonad = {
+    enable = true;
+    enableContribAndExtras = true;
+  };
+  services.xserver.windowManager.xmonad.config =
+    builtins.readFile ./minimal-conf.hs;
 
   # Configure keymap in X11
   # services.xserver.layout = "us";
@@ -64,8 +96,7 @@ in
   # services.printing.enable = true;
 
   # Enable sound.
-  # sound.enable = true;
-  # hardware.pulseaudio.enable = true;
+  # sound.enable = true; # hardware.pulseaudio.enable = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -92,33 +123,40 @@ in
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    nodejs
+    haskellPackages.xmobar
+    dmenu
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     emacs
     (vscode-with-extensions.override {
-      vscodeExtensions = with vscode-extensions; [
-        bbenoist.nix
-        ms-python.python
-        ms-azuretools.vscode-docker
-        ms-vscode-remote.remote-ssh
-        github.copilot
-      ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-        {
+      vscodeExtensions = with vscode-extensions;
+        [
+          bbenoist.nix
+          ms-python.python
+          ms-azuretools.vscode-docker
+          ms-vscode-remote.remote-ssh
+          github.copilot
+        ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [{
           name = "remote-ssh-edit";
           publisher = "ms-vscode-remote";
           version = "0.47.2";
           sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
-        }
-      ];
+        }];
     })
-    sbclPackages.stumpwm
     google-chrome
     gnome.gnome-terminal
+    sakura
     git
     openssh
     slack
     nixpkgs-fmt
+    nixfmt
+    (writeShellScriptBin "google-chrome" ''
+      exec ${pkgs.google-chrome}/bin/google-chrom-stable $@
+    '')
   ];
+
   programs.direnv.enable = true;
 
   systemd.services.clone-repos = {
@@ -153,8 +191,6 @@ in
   systemd.targets.suspend.enable = false;
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
-
-
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -191,7 +227,6 @@ in
   nixpkgs.config.allowUnfree = true;
   services.tailscale.enable = true;
 
-
   boot.initrd.postDeviceCommands = pkgs.lib.mkAfter ''
     zfs rollback -r rpool/local/root@blank
   '';
@@ -212,14 +247,10 @@ in
     };
   };
 
-
   # persist networkmanager
   environment.persistence."/persist" = {
     hideMounts = true;
-    directories = [
-      "/etc/NetworkManager/system-connections"
-      "/etc/nixos"
-    ];
+    directories = [ "/etc/NetworkManager/system-connections" "/etc/nixos" ];
   };
 
   # update sudoers to allow alice to run sudo without password
@@ -231,6 +262,7 @@ in
 
   # create a oneshot job to authenticate to Tailscale
   systemd.services.tailscale-autoconnect = {
+    enable = false;
     description = "Automatic connection to Tailscale";
 
     # make sure tailscale is running before trying to connect to tailscale
@@ -256,7 +288,7 @@ in
       ${tailscale}/bin/tailscale up --ssh -authkey `cat /persist/ts/authkey`
     '';
   };
-# https://github.com/NixOS/nixpkgs/issues/180175
-systemd.services.NetworkManager-wait-online.enable = false;
+  # https://github.com/NixOS/nixpkgs/issues/180175
+  systemd.services.NetworkManager-wait-online.enable = false;
 }
 

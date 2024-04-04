@@ -1,0 +1,205 @@
+[colors]
+accent-dark = #2a3b4d
+accent-light = #bb64a9
+background = #2a3b4d
+; background-tray = #2a3b4d
+foreground = #FFFFFF
+foreground-alt = #66ff66
+alert = #BF616A
+
+[global/wm]
+margin-top = 2
+margin-bottom = 2
+
+[bar/laptop]
+monitor = eDP-1
+width = 100%
+height = 36
+offset-x = 0
+offset-y = 0
+
+background = #002a3b4d
+foreground = #ffffff
+
+
+dim-value = 1.0
+
+overline-size = 1
+overline-color = ${colors.background}
+underline-size = 2
+underline-color = ${colors.background}
+
+border-top-size = 0
+border-top-color = ${colors.background}
+border-bottom-size = 0
+border-bottom-color = ${colors.background}
+
+padding-left = 3
+padding-right = 3
+module-margin-left = 1
+module-margin-right = 1
+
+font-0 = "DroidSansMono Nerd Font:size=10;1"
+font-1 = "FontAwesome:pixelsize=8;1"
+
+modules-right = 
+modules-center = ewmh 
+modules-left = date cpu memory wlan battery time-left 
+
+tray-position = right
+tray-padding = 1
+tray-background = #992a3b4d
+
+; tray-transparent = true
+
+
+override-redirect = true
+wm-restack = i3
+enable-ipc = true
+
+; [bar/screen]
+; monitor = HDMI-0
+; width = 100%
+; height = 28
+; offset-x = 0
+; offset-y = 0
+
+; background = ${colors.background}
+; foreground = ${colors.foreground}
+
+; overline-size = 1
+; overline-color = ${colors.background}
+; underline-size = 2
+; underline-color = ${colors.background}
+
+; border-top-size = 0
+; border-top-color = ${colors.background}
+; border-bottom-size = 0
+; border-bottom-color = ${colors.background}
+
+; padding-left = 3
+; padding-right = 3
+; module-margin-left = 1
+; module-margin-right = 1
+
+; font-0 = "Source Code Pro:size=8;1"
+; font-1 = "FontAwesome:pixelsize=8;1"
+
+; modules-left = 
+; modules-center = 
+; modules-right = wlan battery date
+
+; enable-ipc = true
+
+[module/ewmh]
+type = internal/xworkspaces
+
+enable-click = true
+enable-scroll = false
+
+
+label-monitor = %name%
+
+; NOTE: nwin is not supported in the main repo, try
+;       https://github.com/lepisma/polybar/tree/nwin-for-xworkspaces
+label-active = " %index% %name% "
+label-active-foreground = ${colors.foreground}
+label-active-background = ##2a3b4d
+label-active-underline = ${colors.foreground-alt}
+
+label-occupied = " %index% %name% "
+label-occupied-foreground =  ##ff996
+label-occupied-underline =  #bb64a9
+
+
+label-empty = " %index% %name% "
+label-empty-foreground = ${colors.foreground-alt}
+
+[module/cpu]
+type = internal/cpu
+interval = 2
+format-prefix = "CPU "
+format-prefix-foreground = ${colors.foreground-alt}
+label = %percentage%%
+
+[module/memory]
+type = internal/memory
+interval = 3
+format-prefix = "MEM "
+format-prefix-foreground = ${colors.foreground-alt}
+label = %percentage_used%%
+
+[module/date]
+type = internal/date
+interval = 5
+time = "%H:%M"
+date = "%Y %m %d %a %b"
+label = "%time%, %date%"
+format-prefix = " "
+format-prefix-foreground = ${colors.foreground-alt}
+format-prefix-background = ${colors.background}
+; label-background = ${colors.background}
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = ADP1
+full-at = 98
+
+format-charging = <animation-charging> <label-charging>
+format-discharging = <ramp-capacity> <label-discharging>
+
+format-full-prefix = " "
+format-full-prefix-foreground = ${colors.foreground-alt}
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+ramp-capacity-foreground = ${colors.alert}
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+animation-charging-foreground = ${colors.foreground}
+animation-charging-framerate = 750
+
+
+
+[module/battery2]
+type = internal/battery
+battery = BAT1
+adapter = ADP1
+full-at = 98
+
+format-charging = <animation-charging> <label-charging>
+format-discharging = <ramp-capacity> <label-discharging>
+
+format-full-prefix = " "
+format-full-prefix-foreground = ${colors.foreground-alt}
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+ramp-capacity-foreground = ${colors.alert}
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+animation-charging-foreground = ${colors.foreground}
+animation-charging-framerate = 750
+
+
+[module/time-left]
+type = custom/script
+exec = upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep time | xargs
+label = %output%
+tail = true
+interval = 60
