@@ -10,16 +10,8 @@ let
     sha256 = "sha256:16x067nv146igqfxq8b3a0rf6715z5vpl0hz27dp2a29s6lr8944";
   };
 
-  polybarConfig = pkgs.stdenv.mkDerivation {
-    name = "polybar-config";
-    src = ./.;
-    installPhase = ''
-      mkdir -p $out/config
-      cp ./polybar-config.toml $out/config/config
-    '';
-  };
-
-in {
+in
+{
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -35,7 +27,7 @@ in {
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable =
     true; # Easiest to use and most distros use this by default.
-  networking.nameservers = [   "100.100.100.100" "8.8.8.8"  ];
+  networking.nameservers = [ "100.100.100.100" "8.8.8.8" ];
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
@@ -52,14 +44,11 @@ in {
   #   useXkbConfig = true; # use xkbOptions in tty.
   # };
 
- services.xserver.windowManager.xmonad = {
-   enable = true;
-   enableContribAndExtras = true;
- };
-  services.xserver.displayManager.setupCommands = ''
-    exec ${pkgs.polybar}/bin/polybar -c ${polybarConfig}/config/config laptop &
-    ${pkgs.networkmanagerapplet}/bin/nm-applet &
-  '';
+  services.xserver = {
+    enable = true;
+    displayManager.gdm.enable = true;
+    desktopManager.gnome.enable = true;
+  };
 
   sound.enable = true; # hardware.pulseaudio.enable = true;
 
@@ -89,86 +78,31 @@ in {
   security.sudo.enable = true;
 
 
-  systemd.services = {
-    # Enable the Tailscale daemon.
-    nm-applet = {
-      path = with pkgs; [
-        hicolor-icon-theme
-      ];
-      environment = { DISPLAY = ":0"; };
-      description = "Network manager applet";
-      wantedBy = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
-      serviceConfig.ExecStart = "${pkgs.networkmanagerapplet}/bin/nm-applet";
-      serviceConfig.User = "alice";
-    };
-  };
+  # systemd.services = {
+  #   # Enable the Tailscale daemon.
+  #   nm-applet = {
+  #     path = with pkgs; [
+  #       hicolor-icon-theme
+  #     ];
+  #     environment = { DISPLAY = ":0"; };
+  #     description = "Network manager applet";
+  #     wantedBy = [ "graphical-session.target" ];
+  #     partOf = [ "graphical-session.target" ];
+  #     serviceConfig.ExecStart = "${pkgs.networkmanagerapplet}/bin/nm-applet";
+  #     serviceConfig.User = "alice";
+  #   };
+  # };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    gnomeExtensions.appindicator
-    nodejs
-    haskellPackages.xmobar
-    dmenu
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
-    emacs
-    (vscode-with-extensions.override {
-      vscodeExtensions = with vscode-extensions;
-        [
-          bbenoist.nix
-          ms-python.python
-          ms-azuretools.vscode-docker
-          ms-vscode-remote.remote-ssh
-          github.copilot
-        ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [{
-          name = "remote-ssh-edit";
-          publisher = "ms-vscode-remote";
-          version = "0.47.2";
-          sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
-        }];
-    })
-    google-chrome
-    gnome.gnome-terminal
-    sakura
     git
     openssh
-    slack
-    nixpkgs-fmt
-    nixfmt
-    (writeShellScriptBin "google-chrome" ''
-      exec ${pkgs.google-chrome}/bin/google-chrome-stable $@
-    '')
   ];
 
-  programs.direnv.enable = true;
 
-  systemd.services.clone-repos = {
-    description = "Clone repositories to /home/alice";
-    wantedBy = [ "multi-user.target" ];
-
-    script = ''
-      #!/bin/sh
-      # add ssh to path
-      export PATH=$PATH:${pkgs.openssh}/bin
-      cd /home/alice || exit
-      # clone if not exists
-      if [ ! -d "dotfiles" ]; then
-        ${pkgs.git}/bin/git clone git@gitlab.com:reedrichards/dotfiles.git
-      fi
-      # Add more repositories as needed
-      # git@gitlab.com:reedrichards/obay.git
-      if [ ! -d "obay" ]; then 
-        ${pkgs.git}/bin/git clone git@gitlab.com:reedrichards/obay.git
-      fi
-    '';
-
-    serviceConfig = {
-      User = "alice";
-      Group = "users"; # or set it to alice's primary group
-    };
-  };
 
   # Disable the GNOME3/GDM auto-suspend feature that cannot be disabled in GUI!
   # If no user is logged in, the machine will power down after 20 minutes.
@@ -210,7 +144,6 @@ in {
   system.stateVersion = "23.05"; # Did you read the comment?
   networking.hostId = "8425e349";
   nixpkgs.config.allowUnfree = true;
-  services.tailscale.enable = true;
 
   boot.initrd.postDeviceCommands = pkgs.lib.mkAfter ''
     zfs rollback -r rpool/local/root@blank
@@ -242,37 +175,7 @@ in {
   security.sudo.wheelNeedsPassword = false;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # enable tailscale up on boot
-  # auth key can be found in /persist/ts/authkey
 
-  # create a oneshot job to authenticate to Tailscale
-  systemd.services.tailscale-autoconnect = {
-    enable = false;
-    description = "Automatic connection to Tailscale";
-
-    # make sure tailscale is running before trying to connect to tailscale
-    after = [ "network-pre.target" "tailscale.service" ];
-    wants = [ "network-pre.target" "tailscale.service" ];
-    wantedBy = [ "multi-user.target" ];
-
-    # set this service as a oneshot job
-    serviceConfig.Type = "oneshot";
-
-    # have the job run this shell script
-    script = with pkgs; ''
-      # wait for tailscaled to settle
-      sleep 2
-
-      # check if we are already authenticated to tailscale
-      status="$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)"
-      if [ $status = "Running" ]; then # if so, then do nothing
-        exit 0
-      fi
-
-      # otherwise authenticate with tailscale
-      ${tailscale}/bin/tailscale up --ssh -authkey `cat /persist/ts/authkey`
-    '';
-  };
   # https://github.com/NixOS/nixpkgs/issues/180175
   systemd.services.NetworkManager-wait-online.enable = false;
 }
