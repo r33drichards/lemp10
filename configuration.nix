@@ -4,18 +4,11 @@
 
 { config, pkgs, ... }:
 
-let
-  impermanence = builtins.fetchTarball {
-    url = "https://github.com/nix-community/impermanence/archive/master.tar.gz";
-    sha256 = "sha256:16x067nv146igqfxq8b3a0rf6715z5vpl0hz27dp2a29s6lr8944";
-  };
 
-in
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    "${impermanence}/nixos.nix"
   ];
 
   # Use the systemd-boot EFI boot loader.
