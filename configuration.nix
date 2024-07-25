@@ -196,6 +196,7 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqzLxaryk4x2IGnXfdrDwbjnEXPEzEVNxCUMeKCcD9w vlinkz@snowflakeos.org"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJO/JBeoXERUIhNUF2yvEK0RSMPahJFvdXWdjD/Jp82 clayton@nixlsd"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHn3i92sMe6n9XBKwsYnOjCV4cuUb+n9S+bC2817NEYo victor@vorta"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMlrXC7K3L90nt5/DYMl/HEMcjnelem2wbM5RaVFYkgC mister.namester@gmail.com"
   ];
 }
 
