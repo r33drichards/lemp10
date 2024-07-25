@@ -193,6 +193,9 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJLb6cphbbtWQEVDpotwTY9IAam6WFpt8Dluap4wFiww root@ip-10-0-2-147.us-west-2.compute.internal"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGENQMz7ldqG4Zk/wfcwz1Uhl67eP5TLx1ZEmOUbqkME rw@rws-MacBook-Air.local"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9tjvxDXYRrYX6oDlWI0/vbuib9JOwAooA+gbyGG/+Q robertwendt@Roberts-Laptop.local"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqzLxaryk4x2IGnXfdrDwbjnEXPEzEVNxCUMeKCcD9w vlinkz@snowflakeos.org"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJO/JBeoXERUIhNUF2yvEK0RSMPahJFvdXWdjD/Jp82 clayton@nixlsd"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHn3i92sMe6n9XBKwsYnOjCV4cuUb+n9S+bC2817NEYo victor@vorta"
   ];
 }
 
