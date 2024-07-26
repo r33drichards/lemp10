@@ -68,6 +68,7 @@
                   grep Write | \
                   awk '{print $4}' | \
                   xargs cat
+                rm -rf "$dir"
               '';
             };
           };
