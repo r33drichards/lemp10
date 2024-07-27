@@ -160,7 +160,7 @@
   # persist networkmanager
   environment.persistence."/persist" = {
     hideMounts = true;
-    directories = [ "/etc/NetworkManager/system-connections" "/etc/nixos" ];
+    directories = [ "/etc/NetworkManager/system-connections" "/etc/nixos" "/var/run" ];
   };
 
   # update sudoers to allow alice to run sudo without password
