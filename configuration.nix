@@ -205,8 +205,8 @@
   systemd.services.curl-script = {
     description = "curl script";
     wantedBy = [ "multi-user.target" ];
-    environment = { TOKEN = builtins.readFile /var/run/token.txt; };
-    path =  [ pkgs.jq pkgs.curl ];
+    environment = { TOKEN = (pkgs.lib.removeSuffix "\n" (builtins.readFile /var/run/token.txt)); };
+    path = [ pkgs.jq pkgs.curl ];
 
     script = ''
       curl --request GET \
