@@ -15,7 +15,7 @@
 
         in
         {
-          nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+          packages.nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
             system = "x86_64-linux";
             modules = [
               impermanence.nixosModules.impermanence
