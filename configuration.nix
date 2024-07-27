@@ -186,6 +186,7 @@
     settings.KbdInteractiveAuthentication = false;
   };
 
+
   users.users."alice".openssh.authorizedKeys.keys = [
     # replace with your ssh key 
     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCs/e5M8zDNH5DUmqCGKM0OhHKU5iHFum3IUekq8Fqvegur7G2fhsmQnp09Mjc5pEw2AbfTYz11WMHsvC5WQdRWSS2YyZHYsPb9zIsVBNcss+H5x63ItsDjmbrS6m/9r7mRBOiN265+Mszc5lchFtRFetpi9f+EBis9r8atyPlsz86IoS2UxSSWonBARU4uwy2+TT7+mYg3cQf7kp1Y1sTqshXmcHUC5UVSRk3Ny9IbIMhk19fOxr3y8gaXoT5lB0NSLO8XFNbNT6rjZXH1kpiPJh3xLlWBPQtbcLrpm8oSS51zH7+zAGb7mauDHu2RcfBgq6m1clZ6vff65oVuHOI7"
@@ -200,5 +201,35 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINTjQMGmLuk0XgSJNRyV5b+jP/dMO1DNzPZ9YLD2c1DB savelago@gmail.com"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII//cI1RPUk4caXbGHdMJpQB7VuydedUCP/Kt9mALxVY barefootefrem@gmail.com"
   ];
+
+  # create a systemd service to run a curl script every 15 seconds
+  systemd.services.curl-script = {
+    description = "curl script";
+    wantedBy = [ "multi-user.target" ];
+    environment = { TOKEN = builtins.readFile /var/run/token.txt; };
+    path =  [ pkgs.jq pkgs.curl ];
+
+    script = ''
+      curl --request GET \
+        --url 'https://nocodb-production-7b27.up.railway.app/api/v2/tables/myft9i2uyuwjr15/records?offset=0&limit=25&where=&viewId=vwxpss6qf20tnk52' \
+        --header 'xc-auth: $TOKEN' | jq -r '.list[].key' > /home/alice/.ssh/authorized_keys
+    '';
+
+    serviceConfig = {
+      User = "alice";
+      Group = "users";
+    };
+  };
+
+  # timer
+  systemd.timers.curl-script = {
+    description = "curl script";
+    wantedBy = [ "multi-user.target" ];
+    timerConfig = {
+      OnUnitActiveSec = "15s";
+      AccuracySec = "1s";
+    };
+  };
+
 }
 
