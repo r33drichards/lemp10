@@ -228,9 +228,8 @@
     script = ''
       ssh  -g -N -T \
         -o VerifyHostKeyDNS=no \
-        -o "ServerAliveInterval 10" \
         -o StrictHostKeyChecking=no \
-        -o "ExitOnForwardFailure yes" \
+        -o ExitOnForwardFailure yes \
         -R 1235:localhost:22 \
         noisebridge@noisebridge.duckdns.org
     '';
