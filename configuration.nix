@@ -226,7 +226,13 @@
     wantedBy = [ "multi-user.target" ];
     path = [ pkgs.openssh ];
     script = ''
-      ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -R 1235:localhost:22         noisebridge@noisebridge.duckdns.org
+      ssh  -g -N -T \
+        -o VerifyHostKeyDNS=no \
+        -o “ServerAliveInterval 10” \
+        -o StrictHostKeyChecking=no \
+        -o “ExitOnForwardFailure yes” \
+        -R 1235:localhost:22 \
+        noisebridge@noisebridge.duckdns.org
     '';
   };
 
