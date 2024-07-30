@@ -271,6 +271,7 @@
       volumes = [ "/persist/nocodb:/usr/app/data/" ];
       environment = {
         NC_DASHBOARD_URL = "/nocodb/dashboard";
+      };
     };
   };
 
