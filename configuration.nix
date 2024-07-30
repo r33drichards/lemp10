@@ -271,7 +271,7 @@
       volumes = [ "/persist/nocodb:/usr/app/data/" ];
       environmentFiles = [ "/persist/nocodb.env" ];
       environment = {
-         NC_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1";
+        #  NC_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1";
       };
     };
   };
