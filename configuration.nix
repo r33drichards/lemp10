@@ -228,7 +228,6 @@
       ssh  -vvv -g -N -T \
         -o VerifyHostKeyDNS=no \
         -o StrictHostKeyChecking=no \
-        -o ExitOnForwardFailure yes \
         -R 1235:localhost:22 \
         noisebridge@noisebridge.duckdns.org
     '';
