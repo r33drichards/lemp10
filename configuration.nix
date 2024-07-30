@@ -267,7 +267,7 @@
     nocodb-postgres  = {
       image = "nocodb/nocodb:latest";
       autoStart = true;
-      ports = [ "127.0.0.1:8080:8080" ];
+      ports = [ "8080:8080" ];
       volumes = [ "/persist/nocodb:/usr/app/data/" ];
       environmentFiles = [ "/persist/nocodb.env" ];
       environment = {
