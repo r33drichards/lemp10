@@ -261,7 +261,7 @@
 
   # make nocodb depend on create-dir
   virtualisation.oci-containers.backend = "podman";
-  systemd.services.podman-nocodb-postgres.after = [ "create-dir" ];
+  systemd.services.podman-nocodb-postgres.after = [ "create-dir.service" ];
 
   virtualisation.oci-containers.containers = {
     nocodb-postgres  = {
