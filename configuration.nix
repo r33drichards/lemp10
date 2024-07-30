@@ -164,7 +164,7 @@
   # persist networkmanager
   environment.persistence."/persist" = {
     hideMounts = true;
-    directories = [ "/etc/NetworkManager/system-connections" "/etc/nixos" ];
+    directories = [ "/etc/NetworkManager/system-connections" "/etc/nixos" "/var/backup/postgresql/" ];
   };
 
   # update sudoers to allow alice to run sudo without password
@@ -237,6 +237,34 @@
         noisebridge@noisebridge.duckdns.org
     '';
   };
+  systemd.services.reverse-tunnel-nocodb = {
+    # sudo ssh -R 2222:localhost:22 noisebridge@35.94.146.202
+    description = "Reverse Tunnel";
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.openssh ];
+    script = ''
+      ssh  -vvv -g -N -T \
+        -o VerifyHostKeyDNS=no \
+        -o StrictHostKeyChecking=no \
+        -R 8080:localhost:8080 \
+        -i /home/alice/.ssh/id_ed25519 \
+        noisebridge@noisebridge.duckdns.org
+    '';
+  };
+  systemd.services.reverse-tunnel-windmill = {
+    # sudo ssh -R 2222:localhost:22 noisebridge@35.94.146.202
+    description = "Reverse Tunnel";
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.openssh ];
+    script = ''
+      ssh  -vvv -g -N -T \
+        -o VerifyHostKeyDNS=no \
+        -o StrictHostKeyChecking=no \
+        -R 8001:localhost:8001 \
+        -i /home/alice/.ssh/id_ed25519 \
+        noisebridge@noisebridge.duckdns.org
+    '';
+  };
   # Enable common container config files in /etc/containers
   virtualisation.containers.enable = true;
   virtualisation = {
@@ -264,7 +292,7 @@
   systemd.services.podman-nocodb-postgres.after = [ "create-dir.service" ];
 
   virtualisation.oci-containers.containers = {
-    nocodb-postgres  = {
+    nocodb-postgres = {
       image = "nocodb/nocodb:latest";
       autoStart = true;
       ports = [ "8080:8080" ];
@@ -272,6 +300,57 @@
     };
   };
 
+
+  services.envfs.enable = true; # for /bin/bash
+  services.envfs.extraFallbackPathCommands = "ln -s $''{pkgs.bash}/bin/bash $out/bash";
+
+  systemd.services.windmill-worker = {
+    path = [
+      pkgs.nix
+      pkgs.curl
+      pkgs.jq
+      pkgs.git
+      pkgs.ripgrep
+      pkgs.openssh
+      pkgs.gawk
+      pkgs.awscli2
+    ];
+  };
+
+  systemd.services.windmill-worker-native = {
+    # wait for restore db to complete
+
+
+  };
+
+  # windmill-worker.service   
+  systemd.services.windmill-native = { };
+
+
+  services.windmill.enable = true;
+  services.windmill.baseUrl = "https://nbwindmill.duckdns.org";
+  services.windmill.database.urlPath = "/persist/dburl";
+
+  services.postgresql = {
+    authentication = pkgs.lib.mkForce ''
+      host    windmill        windmill        127.0.0.1/32            trust
+      local   all             all                                     trust
+      # IPv4 local connections:
+      host    all             all             127.0.0.1/32            trust
+      # IPv6 local connections:
+      host    all             all             ::1/128                 trust
+      # Allow replication connections from localhost, by a user with the
+      # replication privilege.
+      local   replication     all                                     trust
+      host    replication     all             127.0.0.1/32            trust
+      host    replication     all             ::1/128                 trust
+    '';
+  };
+
+  services.postgresqlBackup = {
+    enable = true;
+    databases = [ "windmill" ];
+  };
 
 
 
