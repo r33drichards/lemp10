@@ -269,10 +269,7 @@
       autoStart = true;
       ports = [ "8080:8080" ];
       volumes = [ "/persist/nocodb:/usr/app/data/" ];
-      environmentFiles = [ "/persist/nocodb.env" ];
-      environment = {
-        #  NC_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1";
-      };
+
     };
   };
 
