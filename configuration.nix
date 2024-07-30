@@ -250,7 +250,19 @@
       defaultNetwork.settings.dns_enabled = true;
     };
   };
+  #  mkdir /persist/nocodb 
+  systemd.services.create-dir = {
+    description = "Create directory";
+    wantedBy = [ "multi-user.target" ];
+    script = ''
+      mkdir -p /persist/nocodb
+    '';
+  };
+
+  # make nocodb depend on create-dir
   virtualisation.oci-containers.backend = "podman";
+  systemd.services.podman-nocodb-postgres.after = [ "create-dir" ];
+
   virtualisation.oci-containers.containers = {
     nocodb-postgres  = {
       image = "nocodb/nocodb:latest";
