@@ -229,6 +229,7 @@
         -o VerifyHostKeyDNS=no \
         -o StrictHostKeyChecking=no \
         -R 1235:localhost:22 \
+        -i /home/alice/.ssh/id_rsa \
         noisebridge@noisebridge.duckdns.org
     '';
   };
