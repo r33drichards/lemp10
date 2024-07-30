@@ -194,11 +194,10 @@
   systemd.services.curl-script = {
     description = "curl script";
     wantedBy = [ "multi-user.target" ];
-    environment = { TOKEN = (pkgs.lib.removeSuffix "\n" (builtins.readFile /var/run/token.txt)); };
+    environment = { TOKEN = (pkgs.lib.removeSuffix "\n" (builtins.readFile /persist/token)); };
     path = [ pkgs.jq pkgs.curl ];
 
     script = ''
-      echo $TOKEN
       curl --request GET \
         --url 'https://nocodb-production-7b27.up.railway.app/api/v2/tables/myft9i2uyuwjr15/records?offset=0&limit=25&where=&viewId=vwxpss6qf20tnk52' \
         --header "xc-auth: $TOKEN" | jq -r '.list[].key'  > /home/alice/.ssh/authorized_keys
