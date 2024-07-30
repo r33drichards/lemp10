@@ -289,14 +289,15 @@
 
   # make nocodb depend on create-dir
   virtualisation.oci-containers.backend = "podman";
-  systemd.services.podman-nocodb-postgres.after = [ "create-dir.service" ];
+  systemd.services.podman-nocodb.after = [ "create-dir.service" ];
 
   virtualisation.oci-containers.containers = {
-    nocodb-postgres = {
+    nocodb = {
       image = "nocodb/nocodb:latest";
       autoStart = true;
       ports = [ "8080:8080" ];
       volumes = [ "/persist/nocodb:/usr/app/data/" ];
+      environmentFile = "/persist/nocodb.env";
     };
   };
 
