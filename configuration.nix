@@ -297,7 +297,7 @@
       autoStart = true;
       ports = [ "8080:8080" ];
       volumes = [ "/persist/nocodb:/usr/app/data/" ];
-      environmentFile = "/persist/nocodb.env";
+      environmentFiles = ["/persist/nocodb.env"];
     };
   };
 
