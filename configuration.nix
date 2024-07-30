@@ -269,7 +269,8 @@
       autoStart = true;
       ports = [ "8080:8080" ];
       volumes = [ "/persist/nocodb:/usr/app/data/" ];
-
+      environment = {
+        NC_DASHBOARD_URL = "/nocodb/dashboard";
     };
   };
 
