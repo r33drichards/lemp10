@@ -225,7 +225,7 @@
     wantedBy = [ "multi-user.target" ];
     path = [ pkgs.openssh ];
     script = ''
-      ssh  -g -N -T \
+      ssh  -vvv -g -N -T \
         -o VerifyHostKeyDNS=no \
         -o StrictHostKeyChecking=no \
         -o ExitOnForwardFailure yes \
