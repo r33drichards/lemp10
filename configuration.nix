@@ -320,7 +320,7 @@
     environment = {
       HOME="/tmp";
       WorkingDirectory="/tmp";
-    }
+    };
   };
 
   systemd.services.windmill-worker-native = {
