@@ -297,7 +297,7 @@
       autoStart = true;
       ports = [ "8080:8080" ];
       volumes = [ "/persist/nocodb:/usr/app/data/" ];
-      environmentFiles = ["/persist/nocodb.env"];
+      environmentFiles = [ "/persist/nocodb.env" ];
     };
   };
 
@@ -317,6 +317,10 @@
       pkgs.awscli2
       unixtools.ping
     ];
+    serviceConfig = {
+      User = "alice";
+      Group = "users";
+    };
   };
 
   systemd.services.windmill-worker-native = {
