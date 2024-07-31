@@ -1,7 +1,7 @@
 {
   description = "basic flake-utils";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable/b3b2b28c1daa04fe2ae47c21bb76fd226eac4ca1";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.impermanence.url = "github:nix-community/impermanence";
 
