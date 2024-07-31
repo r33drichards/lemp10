@@ -317,6 +317,10 @@
       pkgs.awscli2
       unixtools.ping
     ];
+    environment = {
+      HOME="/tmp";
+      WorkingDirectory="/tmp";
+    }
   };
 
   systemd.services.windmill-worker-native = {
