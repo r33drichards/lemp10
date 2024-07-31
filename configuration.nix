@@ -306,7 +306,7 @@
   services.envfs.extraFallbackPathCommands = "ln -s $''{pkgs.bash}/bin/bash $out/bash";
 
   systemd.services.windmill-worker = {
-    path = [
+    path = with pkgs;[
       pkgs.nix
       pkgs.curl
       pkgs.jq
