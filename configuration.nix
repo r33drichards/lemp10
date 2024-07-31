@@ -317,15 +317,10 @@
       pkgs.awscli2
       unixtools.ping
     ];
-    serviceConfig = {
-      User = "alice";
-      Group = "users";
-    };
   };
 
   systemd.services.windmill-worker-native = {
     # wait for restore db to complete
-
 
   };
 
