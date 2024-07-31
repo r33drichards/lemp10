@@ -164,7 +164,7 @@
   # persist networkmanager
   environment.persistence."/persist" = {
     hideMounts = true;
-    directories = [ "/etc/NetworkManager/system-connections" "/etc/nixos" "/var/backup/postgresql/" ];
+    directories = [ "/etc/NetworkManager/system-connections" "/etc/nixos" "/var/backup/postgresql/" "/var/lib/postgresql"];
   };
 
   # update sudoers to allow alice to run sudo without password
@@ -236,6 +236,12 @@
         -i /home/alice/.ssh/id_ed25519 \
         noisebridge@noisebridge.duckdns.org
     '';
+    serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = 30;  # Delay between retries
+      StartLimitBurst = 5;  # Number of retry attempts
+      StartLimitIntervalSec = 300;  # Time window for retry attempts
+    };
   };
   systemd.services.reverse-tunnel-nocodb = {
     # sudo ssh -R 2222:localhost:22 noisebridge@35.94.146.202
@@ -250,6 +256,12 @@
         -i /home/alice/.ssh/id_ed25519 \
         noisebridge@noisebridge.duckdns.org
     '';
+    serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = 30;  # Delay between retries
+      StartLimitBurst = 5;  # Number of retry attempts
+      StartLimitIntervalSec = 300;  # Time window for retry attempts
+    };
   };
   systemd.services.reverse-tunnel-windmill = {
     # sudo ssh -R 2222:localhost:22 noisebridge@35.94.146.202
@@ -264,6 +276,12 @@
         -i /home/alice/.ssh/id_ed25519 \
         noisebridge@noisebridge.duckdns.org
     '';
+        serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = 30;  # Delay between retries
+      StartLimitBurst = 5;  # Number of retry attempts
+      StartLimitIntervalSec = 300;  # Time window for retry attempts
+    };
   };
   # Enable common container config files in /etc/containers
   virtualisation.containers.enable = true;
