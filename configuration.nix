@@ -315,6 +315,7 @@
       pkgs.openssh
       pkgs.gawk
       pkgs.awscli2
+      unixtools.ping
     ];
   };
 
