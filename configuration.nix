@@ -396,10 +396,10 @@
     databases = [ "windmill" ];
   };
 
-      nix.registry = {
-        nixpkgs.flake = nixpkgs;
-        microvm.flake = "github:astro/microvm.nix";
-      };
+  nix.registry = {
+    nixpkgs.flake = nixpkgs;
+    microvm.flake = "github:astro/microvm.nix";
+  };
 
 
 }
