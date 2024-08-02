@@ -164,7 +164,7 @@
   # persist networkmanager
   environment.persistence."/persist" = {
     hideMounts = true;
-    directories = [ "/etc/NetworkManager/system-connections" "/etc/nixos" "/var/backup/postgresql/" "/var/lib/postgresql"];
+    directories = [ "/etc/NetworkManager/system-connections" "/etc/nixos" "/var/backup/postgresql/" "/var/lib/postgresql" ];
   };
 
   # update sudoers to allow alice to run sudo without password
@@ -238,9 +238,9 @@
     '';
     serviceConfig = {
       Restart = "on-failure";
-      RestartSec = 30;  # Delay between retries
-      StartLimitBurst = 5;  # Number of retry attempts
-      StartLimitIntervalSec = 300;  # Time window for retry attempts
+      RestartSec = 30; # Delay between retries
+      StartLimitBurst = 5; # Number of retry attempts
+      StartLimitIntervalSec = 300; # Time window for retry attempts
     };
   };
   systemd.services.reverse-tunnel-nocodb = {
@@ -258,9 +258,9 @@
     '';
     serviceConfig = {
       Restart = "on-failure";
-      RestartSec = 30;  # Delay between retries
-      StartLimitBurst = 5;  # Number of retry attempts
-      StartLimitIntervalSec = 300;  # Time window for retry attempts
+      RestartSec = 30; # Delay between retries
+      StartLimitBurst = 5; # Number of retry attempts
+      StartLimitIntervalSec = 300; # Time window for retry attempts
     };
   };
   systemd.services.reverse-tunnel-windmill = {
@@ -276,11 +276,32 @@
         -i /home/alice/.ssh/id_ed25519 \
         noisebridge@noisebridge.duckdns.org
     '';
-        serviceConfig = {
+    serviceConfig = {
       Restart = "on-failure";
-      RestartSec = 30;  # Delay between retries
-      StartLimitBurst = 5;  # Number of retry attempts
-      StartLimitIntervalSec = 300;  # Time window for retry attempts
+      RestartSec = 30; # Delay between retries
+      StartLimitBurst = 5; # Number of retry attempts
+      StartLimitIntervalSec = 300; # Time window for retry attempts
+    };
+  };
+
+  systemd.services.reverse-tunnel-woodpecker = {
+    # sudo ssh -R 2222:localhost:22 noisebridge@35.94.146.202
+    description = "Reverse Tunnel";
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.openssh ];
+    script = ''
+      ssh  -vvv -g -N -T \
+        -o VerifyHostKeyDNS=no \
+        -o StrictHostKeyChecking=no \
+        -R 3007:localhost:3007 \
+        -i /home/alice/.ssh/id_ed25519 \
+        noisebridge@noisebridge.duckdns.org
+    '';
+    serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = 30; # Delay between retries
+      StartLimitBurst = 5; # Number of retry attempts
+      StartLimitIntervalSec = 300; # Time window for retry attempts
     };
   };
   # Enable common container config files in /etc/containers
@@ -336,8 +357,8 @@
       unixtools.ping
     ];
     environment = {
-      HOME="/tmp";
-      WorkingDirectory="/tmp";
+      HOME = "/tmp";
+      WorkingDirectory = "/tmp";
     };
   };
 
@@ -375,6 +396,62 @@
     databases = [ "windmill" ];
   };
 
+
+
+              services.woodpecker-server = {
+                enable = true;
+                package = woodpecker;
+
+                environment = {
+                  WOODPECKER_SERVER_ADDR = ":3007";
+                  WOODPECKER_HOST = (pkgs.lib.removeSuffix "\n" (builtins.readFile /metadata/template-host));
+                  WOODPECKER_GITHUB = "true";
+                  WOODPECKER_GITHUB_CLIENT = "Ov23li77VshZc9W7M4Gp";
+                  WOODPECKER_GITHUB_SECRET = builtins.readFile /github-client-secret;
+                  WOODPECKER_AGENT_SECRET = builtins.readFile /agent-secret;
+                  WOODPECKER_ADMIN = "r33drichards";
+                  WOODPECKER_DATABASE_DRIVER = "postgres";
+                  WOODPECKER_DATABASE_DATASOURCE = builtins.readFile /pgurl;
+                  # WOODPECKER_LOG_STORE = "file";
+                  # WOODPECKER_LOG_STORE_FILE_PATH = "/var/log/";
+                };
+                # You can pass a file with env vars to the system it could look like:
+                # environmentFile = "/path/to/my/secrets/file";
+              };
+
+              # This sets up a woodpecker agent
+              services.woodpecker-agents.agents."docker" = {
+                enable = true;
+                package = woodpecker-agent;
+
+                # We need this to talk to the podman socket
+                extraGroups = [ "podman" ];
+                environment = {
+                  WOODPECKER_SERVER = "localhost:9000";
+                  WOODPECKER_MAX_WORKFLOWS = "4";
+                  DOCKER_HOST = "unix:///run/podman/podman.sock";
+                  WOODPECKER_BACKEND = "docker";
+                  WOODPECKER_AGENT_SECRET = builtins.readFile /agent-secret;
+
+
+                };
+                # Same as with woodpecker-server
+                # environmentFile = [ "/var/lib/secrets/woodpecker.env" ];
+              };
+
+              # Here we setup podman and enable dns
+              virtualisation.podman = {
+                enable = true;
+                defaultNetwork.settings = {
+                  dns_enabled = true;
+                };
+                dockerSocket.enable = true;
+              };
+              # This is needed for podman to be able to talk over dns
+              networking.firewall.interfaces."podman0" = {
+                allowedUDPPorts = [ 53 ];
+                allowedTCPPorts = [ 53 ];
+              };
 
 
 }
