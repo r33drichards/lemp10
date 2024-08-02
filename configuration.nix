@@ -399,7 +399,7 @@
     };
   };
 
-    systemd.network.netdevs."vm-test".tunConfig = {
+    systemd.network.netdevs."tun0".tunConfig = {
       User = "alice";
     };
 
