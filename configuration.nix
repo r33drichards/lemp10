@@ -397,9 +397,6 @@
       Name = "br0";
       Kind = "bridge";
     };
-    tunConfig = {
-      User = "alice";
-    };
   };
 
 
