@@ -284,26 +284,7 @@
     };
   };
 
-  systemd.services.reverse-tunnel-woodpecker = {
-    # sudo ssh -R 2222:localhost:22 noisebridge@35.94.146.202
-    description = "Reverse Tunnel";
-    wantedBy = [ "multi-user.target" ];
-    path = [ pkgs.openssh ];
-    script = ''
-      ssh  -vvv -g -N -T \
-        -o VerifyHostKeyDNS=no \
-        -o StrictHostKeyChecking=no \
-        -R 3007:localhost:3007 \
-        -i /home/alice/.ssh/id_ed25519 \
-        noisebridge@noisebridge.duckdns.org
-    '';
-    serviceConfig = {
-      Restart = "on-failure";
-      RestartSec = 30; # Delay between retries
-      StartLimitBurst = 5; # Number of retry attempts
-      StartLimitIntervalSec = 300; # Time window for retry attempts
-    };
-  };
+
   # Enable common container config files in /etc/containers
   virtualisation.containers.enable = true;
   virtualisation = {
