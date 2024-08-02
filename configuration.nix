@@ -398,61 +398,6 @@
 
 
 
-              services.woodpecker-server = {
-                enable = true;
-                package = woodpecker;
-
-                environment = {
-                  WOODPECKER_SERVER_ADDR = ":3007";
-                  WOODPECKER_HOST = (pkgs.lib.removeSuffix "\n" (builtins.readFile /metadata/template-host));
-                  WOODPECKER_GITHUB = "true";
-                  WOODPECKER_GITHUB_CLIENT = "Ov23li77VshZc9W7M4Gp";
-                  WOODPECKER_GITHUB_SECRET = builtins.readFile /github-client-secret;
-                  WOODPECKER_AGENT_SECRET = builtins.readFile /agent-secret;
-                  WOODPECKER_ADMIN = "r33drichards";
-                  WOODPECKER_DATABASE_DRIVER = "postgres";
-                  WOODPECKER_DATABASE_DATASOURCE = builtins.readFile /pgurl;
-                  # WOODPECKER_LOG_STORE = "file";
-                  # WOODPECKER_LOG_STORE_FILE_PATH = "/var/log/";
-                };
-                # You can pass a file with env vars to the system it could look like:
-                # environmentFile = "/path/to/my/secrets/file";
-              };
-
-              # This sets up a woodpecker agent
-              services.woodpecker-agents.agents."docker" = {
-                enable = true;
-                package = woodpecker-agent;
-
-                # We need this to talk to the podman socket
-                extraGroups = [ "podman" ];
-                environment = {
-                  WOODPECKER_SERVER = "localhost:9000";
-                  WOODPECKER_MAX_WORKFLOWS = "4";
-                  DOCKER_HOST = "unix:///run/podman/podman.sock";
-                  WOODPECKER_BACKEND = "docker";
-                  WOODPECKER_AGENT_SECRET = builtins.readFile /agent-secret;
-
-
-                };
-                # Same as with woodpecker-server
-                # environmentFile = [ "/var/lib/secrets/woodpecker.env" ];
-              };
-
-              # Here we setup podman and enable dns
-              virtualisation.podman = {
-                enable = true;
-                defaultNetwork.settings = {
-                  dns_enabled = true;
-                };
-                dockerSocket.enable = true;
-              };
-              # This is needed for podman to be able to talk over dns
-              networking.firewall.interfaces."podman0" = {
-                allowedUDPPorts = [ 53 ];
-                allowedTCPPorts = [ 53 ];
-              };
-
 
 }
 
