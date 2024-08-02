@@ -382,7 +382,7 @@
   nix.registry = {
     microvm.flake = inputs.microvm;
   };
-  
+
   systemd.network.enable = true;
 
   systemd.network.networks."10-lan" = {
@@ -398,6 +398,11 @@
       Kind = "bridge";
     };
   };
+
+    systemd.network.netdevs."vm-test".tunConfig = {
+      User = "alice";
+    };
+
 
   systemd.network.networks."10-lan-bridge" = {
     matchConfig.Name = "br0";
