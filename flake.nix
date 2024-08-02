@@ -4,8 +4,9 @@
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.impermanence.url = "github:nix-community/impermanence";
+  inputs.microvm.url = "github:astro/microvm.nix";
 
-  outputs = { self, nixpkgs, flake-utils, impermanence, ... }:
+  outputs = { self, nixpkgs, flake-utils, impermanence, microvm, ... }@inputs:
     (flake-utils.lib.eachDefaultSystem
       (system:
         let
@@ -17,6 +18,9 @@
         {
           packages.nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
             system = "x86_64-linux";
+            specialArgs = {
+              inherit inputs;
+            };
             modules = [
               impermanence.nixosModules.impermanence
               ./configuration.nix
