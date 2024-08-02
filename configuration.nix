@@ -399,9 +399,6 @@
     };
   };
 
-    systemd.network.netdevs."tun0".tunConfig = {
-      User = "alice";
-    };
 
 
   systemd.network.networks."10-lan-bridge" = {
