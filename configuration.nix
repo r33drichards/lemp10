@@ -397,8 +397,10 @@
       Name = "br0";
       Kind = "bridge";
     };
+    tunConfig = {
+      User = "alice";
+    };
   };
-
 
 
   systemd.network.networks."10-lan-bridge" = {
