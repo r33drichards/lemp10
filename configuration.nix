@@ -401,6 +401,11 @@
     matchConfig.Name = "br0";
     networkConfig = {
       Address = [ "192.168.1.2/24" "2001:db8::a/64" ];
+        # [alice@nixos:~/mvm]$ ip route
+        # default via 199.188.195.1 dev wlp0s20f3 proto dhcp src 199.188.195.64 metric 600 
+        # 10.88.0.0/16 dev podman0 proto kernel scope link src 10.88.0.1 
+        # 199.188.195.0/25 dev wlp0s20f3 proto kernel scope link src 199.188.195.64 metric 600 
+
       Gateway = "192.168.1.1";
       DNS = [ "192.168.1.1" ];
       IPv6AcceptRA = true;
