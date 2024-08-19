@@ -223,6 +223,44 @@
     };
   };
 
+
+
+  systemd.services.reverse-tunnel-ng = {
+    # sudo ssh -R 2222:localhost:22 noisebridge@35.94.146.202
+    description = "Reverse Tunnel";
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.openssh ];
+    script = ''
+      ssh  -vvv -g -N -T \
+        -o VerifyHostKeyDNS=no \
+        -o StrictHostKeyChecking=no \
+        -o UserKnownHostsFile=/dev/null \
+        -R 8080:localhost:8080 \
+        -R 8001:localhost:8001 \
+        -R 2222:localhost:22 \
+        -i /home/alice/.ssh/id_ed25519 \
+        noisebridge@nb.robw.fyi \
+        "nix-shell -p caddy --run \"caddy run --config <(echo '
+noco.robw.fyi {
+        reverse_proxy localhost:8080
+}
+
+wm.robw.fyi {
+        reverse_proxy localhost:8001
+}
+
+nb.robw.fyi {
+        redir https://www.noisebridge.net/wiki/Lemp10
+}
+') --adapter caddyfile\""
+    '';
+    serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = 30; # Delay between retries
+      StartLimitIntervalSec = 300; # Time window for retry attempts
+    };
+  };
+
   systemd.services.reverse-tunnel = {
     # sudo ssh -R 2222:localhost:22 noisebridge@35.94.146.202
     description = "Reverse Tunnel";
@@ -243,47 +281,6 @@
       StartLimitIntervalSec = 300; # Time window for retry attempts
     };
   };
-  systemd.services.reverse-tunnel-nocodb = {
-    # sudo ssh -R 2222:localhost:22 noisebridge@35.94.146.202
-    description = "Reverse Tunnel";
-    wantedBy = [ "multi-user.target" ];
-    path = [ pkgs.openssh ];
-    script = ''
-      ssh  -vvv -g -N -T \
-        -o VerifyHostKeyDNS=no \
-        -o StrictHostKeyChecking=no \
-        -o UserKnownHostsFile=/dev/null \
-        -R 8080:localhost:8080 \
-        -i /home/alice/.ssh/id_ed25519 \
-        noisebridge@noisebridge.duckdns.org
-    '';
-    serviceConfig = {
-      Restart = "on-failure";
-      RestartSec = 30; # Delay between retries
-      StartLimitIntervalSec = 300; # Time window for retry attempts
-    };
-  };
-  systemd.services.reverse-tunnel-windmill = {
-    # sudo ssh -R 2222:localhost:22 noisebridge@35.94.146.202
-    description = "Reverse Tunnel";
-    wantedBy = [ "multi-user.target" ];
-    path = [ pkgs.openssh ];
-    script = ''
-      ssh  -vvv -g -N -T \
-        -o VerifyHostKeyDNS=no \
-        -o StrictHostKeyChecking=no \
-        -o UserKnownHostsFile=/dev/null \
-        -R 8001:localhost:8001 \
-        -i /home/alice/.ssh/id_ed25519 \
-        noisebridge@noisebridge.duckdns.org
-    '';
-    serviceConfig = {
-      Restart = "on-failure";
-      RestartSec = 30; # Delay between retries
-      StartLimitIntervalSec = 300; # Time window for retry attempts
-    };
-  };
-
 
   # Enable common container config files in /etc/containers
   virtualisation.containers.enable = true;
