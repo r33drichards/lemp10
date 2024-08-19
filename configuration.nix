@@ -232,6 +232,7 @@
       ssh  -vvv -g -N -T \
         -o VerifyHostKeyDNS=no \
         -o StrictHostKeyChecking=no \
+        -o UserKnownHostsFile=/dev/null \
         -R 1235:localhost:22 \
         -i /home/alice/.ssh/id_ed25519 \
         noisebridge@noisebridge.duckdns.org
@@ -251,6 +252,7 @@
       ssh  -vvv -g -N -T \
         -o VerifyHostKeyDNS=no \
         -o StrictHostKeyChecking=no \
+        -o UserKnownHostsFile=/dev/null \
         -R 8080:localhost:8080 \
         -i /home/alice/.ssh/id_ed25519 \
         noisebridge@noisebridge.duckdns.org
@@ -270,6 +272,7 @@
       ssh  -vvv -g -N -T \
         -o VerifyHostKeyDNS=no \
         -o StrictHostKeyChecking=no \
+        -o UserKnownHostsFile=/dev/null \
         -R 8001:localhost:8001 \
         -i /home/alice/.ssh/id_ed25519 \
         noisebridge@noisebridge.duckdns.org
@@ -401,10 +404,10 @@
     matchConfig.Name = "br0";
     networkConfig = {
       Address = [ "192.168.1.2/24" "2001:db8::a/64" ];
-        # [alice@nixos:~/mvm]$ ip route
-        # default via 199.188.195.1 dev wlp0s20f3 proto dhcp src 199.188.195.64 metric 600 
-        # 10.88.0.0/16 dev podman0 proto kernel scope link src 10.88.0.1 
-        # 199.188.195.0/25 dev wlp0s20f3 proto kernel scope link src 199.188.195.64 metric 600 
+      # [alice@nixos:~/mvm]$ ip route
+      # default via 199.188.195.1 dev wlp0s20f3 proto dhcp src 199.188.195.64 metric 600 
+      # 10.88.0.0/16 dev podman0 proto kernel scope link src 10.88.0.1 
+      # 199.188.195.0/25 dev wlp0s20f3 proto kernel scope link src 199.188.195.64 metric 600 
 
       Gateway = "192.168.1.1";
       DNS = [ "192.168.1.1" ];
