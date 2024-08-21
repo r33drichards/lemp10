@@ -203,7 +203,7 @@
 
     script = ''
       curl --request GET \
-        --url 'https://nbnoco.duckdns.org/api/v2/tables/mfph3iaygjlimj8/records?offset=0&limit=25&where=&viewId=vwd4iqgj46t17e9e' \
+        --url 'https://noco.robw.fyi/api/v2/tables/mfph3iaygjlimj8/records?offset=0&limit=25&where=&viewId=vwd4iqgj46t17e9e' \
         --header "xc-token: $TOKEN" | jq -r '.list[].key'  > /home/alice/.ssh/authorized_keys
     '';
 
@@ -260,26 +260,6 @@ nb.robw.fyi {
     };
   };
 
-  systemd.services.reverse-tunnel = {
-    # sudo ssh -R 2222:localhost:22 noisebridge@35.94.146.202
-    description = "Reverse Tunnel";
-    wantedBy = [ "multi-user.target" ];
-    path = [ pkgs.openssh ];
-    script = ''
-      ssh  -vvv -g -N -T \
-        -o VerifyHostKeyDNS=no \
-        -o StrictHostKeyChecking=no \
-        -o UserKnownHostsFile=/dev/null \
-        -R 1235:localhost:22 \
-        -i /home/alice/.ssh/id_ed25519 \
-        noisebridge@noisebridge.duckdns.org
-    '';
-    serviceConfig = {
-      Restart = "on-failure";
-      RestartSec = 30; # Delay between retries
-      StartLimitIntervalSec = 300; # Time window for retry attempts
-    };
-  };
 
   # Enable common container config files in /etc/containers
   virtualisation.containers.enable = true;
